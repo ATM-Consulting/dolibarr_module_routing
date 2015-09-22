@@ -104,6 +104,10 @@ $form=new Form($db);
 $formCore = new TFormCore('auto','formSave', 'post');
 echo $formCore->hidden('action', 'save');
 
+dol_include_once('/product/class/html.formproduct.class.php');
+$formProduct = new FormProduct($db);
+
+
 $var=false;
 
 print '<table class="noborder" width="100%">';
@@ -125,11 +129,19 @@ print '</tr>';
         ?>
         <tr class="<?php echo $class  ?>">
             <td valign="top">
-            <?php echo $formCore->texte('','TRouting['.$r->getId().'][trigger_code]' , $r->trigger_code, 25,50, '', 'trigger_code'); 
+            <?php 
+            echo $formCore->texte('','TRouting['.$r->getId().'][trigger_code]' , $r->trigger_code, 25,50, '', 'trigger_code'); 
+            echo $langs->trans('ReverseTrigger');
+			echo $formCore->texte('','TRouting['.$r->getId().'][trigger_code_reverse]' , $r->trigger_code_reverse, 25,50, '', 'trigger_code'); 
             
+			
             ?></td>
             <td valign="top">
             	<?php echo $formCore->texte('','TRouting['.$r->getId().'][qty_field]' , $r->qty_field, 25,50); ?>
+            	<?php echo $formCore->texte('product','TRouting['.$r->getId().'][fk_product_field]' , $r->fk_product_field, 25,50); ?>
+            	<?php echo $formCore->texte('lines','TRouting['.$r->getId().'][lines_field]' , $r->lines_field, 25,50); ?>
+            	<?php echo $formCore->texte('type','TRouting['.$r->getId().'][product_type_field]' , $r->product_type_field, 25,50); ?>
+            
             </td>
             
             <td valign="top"><?php 
@@ -140,9 +152,14 @@ print '</tr>';
              ?></td>
             
             <td valign="top"><?php 
+    
+            
                     echo $langs->trans('WarehouseFrom'); //fk_warehouse_from
+                    echo $formProduct->selectWarehouses($r->fk_warehouse_from,'TRouting['.$r->getId().'][fk_warehouse_from]');
                     echo $langs->trans('WarehouseTo'); //fk_warehouse_to
-             ?></td>
+                    echo $formProduct->selectWarehouses($r->fk_warehouse_to,'TRouting['.$r->getId().'][fk_warehouse_to]');
+                    
+            ?></td>
             
             <td valign="bottom"><?php echo '<a href="?action=delete&id='.$r->getId().'">'.img_delete().'</a>';  ?></td>
         </tr>
