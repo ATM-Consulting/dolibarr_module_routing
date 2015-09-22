@@ -23,10 +23,8 @@
  * 				Put some comments here
  */
 // Dolibarr environment
-$res = @include("../../main.inc.php"); // From htdocs directory
-if (! $res) {
-    $res = @include("../../../main.inc.php"); // From "custom" directory
-}
+
+require('../config.php');
 
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
@@ -42,42 +40,48 @@ if (! $user->admin) {
 
 // Parameters
 $action = GETPOST('action', 'alpha');
-
+$PDOdb=new TPDOdb;
 /*
  * Actions
  */
-if (preg_match('/set_(.*)/',$action,$reg))
-{
-	$code=$reg[1];
-	if (dolibarr_set_const($db, $code, GETPOST($code), 'chaine', 0, '', $conf->entity) > 0)
-	{
-		header("Location: ".$_SERVER["PHP_SELF"]);
-		exit;
-	}
-	else
-	{
-		dol_print_error($db);
-	}
-}
-	
-if (preg_match('/del_(.*)/',$action,$reg))
-{
-	$code=$reg[1];
-	if (dolibarr_del_const($db, $code, 0) > 0)
-	{
-		Header("Location: ".$_SERVER["PHP_SELF"]);
-		exit;
-	}
-	else
-	{
-		dol_print_error($db);
-	}
-}
 
+ if($action == 'save') {
+     
+     if(!empty($_REQUEST['TRouting'])) {
+         
+         foreach($_REQUEST['TRouting'] as $id_rem => &$rem) {
+            
+             $r=new TRouting;
+             $r->load($PDOdb, $id_rem);
+             $r->set_values($rem);
+             
+             $r->fk_societe = GETPOST('TRouting_'.$r->getId().'_fk_soc');
+             $r->fk_user = GETPOST('TRouting_'.$r->getId().'_fk_user');
+             
+             $r->save($PDOdb);
+         }
+         
+         
+         setEventMessage('Saved');
+     }
+     
+ } 
+ else if($action == 'delete'){
+     $r=new TRouting;
+     $r->load($PDOdb, GETPOST('id'));
+     $r->delete($PDOdb);
+ }
+ else if($action == 'add'){
+     $r=new TRouting;
+     $r->save($PDOdb);
+     
+ }
+ 
+ 
 /*
  * View
  */
-$page_name = "routingSetup";
+$page_name = "RoutingSetup";
 llxHeader('', $langs->trans($page_name));
 
 // Subheader
@@ -90,36 +94,120 @@ $head = routingAdminPrepareHead();
 dol_fiche_head(
     $head,
     'settings',
-    $langs->trans("Module104760Name"),
+    $langs->trans("Module104330Name"),
     0,
-    "routing@routing"
+    "rememberme@rememberme"
 );
 
 // Setup page goes here
 $form=new Form($db);
+$formCore = new TFormCore('auto','formSave', 'post');
+echo $formCore->hidden('action', 'save');
+
 $var=false;
+
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
-print '<td>'.$langs->trans("Parameters").'</td>'."\n";
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
+print '<td>'.$langs->trans("Trigger").'</td>'."\n";
+print '<td>'.$langs->trans("QtyField").'</td>'."\n";
+print '<td>'.$langs->trans("Condition").'</td>'."\n";
+print '<td>'.$langs->trans("Warehouse").'</td>'."\n";
+print '<td>'.$langs->trans("Action").'</td>'."\n";
+print '</tr>';
 
 
-// Example with a yes / no select
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("ParamLabel").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="right" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_CONSTNAME">';
-print $form->selectyesno("CONSTNAME",$conf->global->CONSTNAME,1);
-print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
-print '</form>';
-print '</td></tr>';
+    $TRoute = TRouting::getAll($PDOdb);
+
+    foreach($TRoute as &$r) {
+        
+        $class = ($class == 'impair') ? 'pair' : 'impair';
+        
+        ?>
+        <tr class="<?php echo $class  ?>">
+            <td valign="top">
+            <?php echo $formCore->texte('','TRouting['.$r->getId().'][trigger_code]' , $r->trigger_code, 25,50, '', 'trigger_code'); 
+            
+            ?></td>
+            <td valign="top">
+            	<?php echo $formCore->texte('','TRouting['.$r->getId().'][qty_field]' , $r->qty_field, 25,50); ?>
+            </td>
+            
+            <td valign="top"><?php 
+                    echo $formCore->zonetexte($langs->trans('CodeToEvalBefore').'<br />','TRouting['.$r->getId().'][condition]' , $r->message_condition, 50,2); 
+                    //if($r->type == 'EVAL') {
+                        echo '<br />'.$formCore->zonetexte($langs->trans('CodeToEvalAfter').'<br />','TRouting['.$r->getId().'][message_code]' , $r->message_code, 50,2);
+                    //}       
+             ?></td>
+            
+            <td valign="top"><?php 
+                    echo $langs->trans('WarehouseFrom'); //fk_warehouse_from
+                    echo $langs->trans('WarehouseTo'); //fk_warehouse_to
+             ?></td>
+            
+            <td valign="bottom"><?php echo '<a href="?action=delete&id='.$r->getId().'">'.img_delete().'</a>';  ?></td>
+        </tr>
+        
+        <?php
+        
+        
+    }
+    
 
 print '</table>';
+
+
+echo '<div class="tabsAction">
+ <a href="?action=add" class="butAction">'.$langs->trans('Add').'</a>
+ <input type="submit" class="butAction" value="'.$langs->trans('Save').'" name="bt_save" />
+</div>
+';
+
+$formCore->end();
+?>  
+<script type="text/javascript">
+$(document).ready(function() {
+    var TTrigger = [
+    "USER_CREATE","USER_CREATE_FROM_CONTACT","USER_MODIFY","USER_DELETE","USER_LOGIN","USER_LOGIN_FAILED","USER_LOGOUT","USER_ENABLEDISABLE"
+    ,"USER_NEW_PASSWORD","USER_SETINGROUP","USER_REMOVEFROMGROUP","GROUP_CREATE","GROUP_MODIFY","GROUP_DELETE","COMPANY_CREATE","COMPANY_MODIFY"
+    ,"COMPANY_DELETE","COMPANY_SENTBYMAIL","CONTACT_CREATE","CONTACT_MODIFY","CONTACT_DELETE","CONTACT_ENABLEDISABLE","PRODUCT_CREATE"
+    ,"PRODUCT_MODIFY","PRODUCT_PRICE_MODIFY","PRODUCT_DELETE","SUPPLIER_PRODUCT_BUYPRICE_UPDATE","SUPPLIER_PRODUCT_BUYPRICE_CREATE"
+    ,"ORDER_CREATE","ORDER_VALIDATE","ORDER_SENTBYMAIL","ORDER_DELETE","ORDER_CLASSIFY_BILLED","ORDER_CLONE","ORDER_CLOSE","ORDER_CANCEL"
+    ,"ORDER_REOPEN","COMMANDE_ADD_CONTACT","COMMANDE_DELETE_CONTACT","COMMANDE_DELETE_RESOURCE","LINEORDER_INSERT","LINEORDER_UPDATE"
+    ,"LINEORDER_DELETE","LINEORDER_DISPATCH","ORDER_SUPPLIER_CREATE","ORDER_SUPPLIER_CLONE","ORDER_SUPPLIER_VALIDATE","ORDER_SUPPLIER_SENTBYMAIL"
+    ,"ORDER_SUPPLIER_APPROVE","ORDER_SUPPLIER_REFUSE","ORDER_SUPPLIER_CANCEL","ORDER_SUPPLIER_DELETE","ORDER_SUPPLIER_DISPATCH"
+    ,"ORDER_SUPPLIER_ADD_CONTACT","ORDER_SUPPLIER_DELETE_CONTACT","ORDER_SUPPLIER_DELETE_RESOURCE","LINEORDER_SUPPLIER_CREATE"
+    ,"LINEORDER_SUPPLIER_UPDATE","LINEORDER_SUPPLIER_DELETE","PROPAL_CREATE","PROPAL_DELETE","PROPAL_CLONE","PROPAL_REOPEN"
+    ,"PROPAL_VALIDATE","PROPAL_CLOSE_SIGNED","PROPAL_CLOSE_REFUSED","PROPAL_SENTBYMAIL","PROPAL_ADD_CONTACT","PROPAL_DELETE_CONTACT"
+    ,"PROPAL_DELETE_RESOURCE","LINEPROPAL_INSERT","LINEPROPAL_UPDATE","LINEPROPAL_DELETE","CONTRACT_CREATE","CONTRACT_VALIDATE"
+    ,"CONTRACT_SERVICE_ACTIVATE","CONTRACT_SERVICE_CLOSE","CONTRACT_DELETE","CONTRAT_ADD_CONTACT","CONTRAT_DELETE_CONTACT"
+    ,"CONTRAT_DELETE_RESOURCE","LINECONTRACT_INSERT","LINECONTRACT_UPDATE","LINECONTRACT_DELETE","BILL_CREATE","BILL_MODIFY"
+    ,"BILL_CLONE","BILL_VALIDATE","BILL_UNVALIDATE","BILL_PAYED","BILL_UNPAYED","BILL_CANCEL","BILL_DELETE","BILL_SENTBYMAIL"
+    ,"FACTURE_ADD_CONTACT","FACTURE_DELETE_CONTACT","FACTURE_DELETE_RESOURCE","LINEBILL_INSERT","LINEBILL_UPDATE","LINEBILL_DELETE"
+    ,"BILL_SUPPLIER_CREATE","BILL_SUPPLIER_MODIFY","BILL_SUPPLIER_DELETE","BILL_SUPPLIER_VALIDATE","BILL_SUPPLIER_PAYED"
+    ,"BILL_SUPPLIER_UNPAYED","BILL_SUPPLIER_SENTBYMAIL","INVOICE_SUPPLIER_ADD_CONTACT","INVOICE_SUPPLIER_DELETE_CONTACT"
+    ,"INVOICE_SUPPLIER_DELETE_RESOURCE","LINEBILL_SUPPLIER_CREATE","LINEBILL_SUPPLIER_UPDATE","LINEBILL_SUPPLIER_DELETE"
+    ,"PAYMENT_CUSTOMER_CREATE","PAYMENT_DELETE","PAYMENT_ADD_TO_BANK","PAYMENT_SUPPLIER_CREATE","PAYMENT_SALARY_CREATE"
+    ,"PAYMENT_SALARY_MODIFY","PAYMENT_SALARY_DELETE","FICHINTER_CREATE","FICHINTER_MODIFY","FICHINTER_DELETE","FICHINTER_VALIDATE"
+    ,"FICHINTER_SENTBYMAIL","FICHINTER_ADD_CONTACT","FICHINTER_DELETE_CONTACT","FICHINTER_DELETE_RESOURCE","LINEFICHINTER_CREATE"
+    ,"LINEFICHINTER_UPDATE","LINEFICHINTER_DELETE","MEMBER_CREATE","MEMBER_VALIDATE","MEMBER_SUBSCRIPTION","MEMBER_MODIFY"
+    ,"MEMBER_RESILIATE","MEMBER_NEW_PASSWORD","MEMBER_DELETE","CATEGORY_CREATE","CATEGORY_MODIFY","CATEGORY_DELETE","CATEGORY_LINK"
+    ,"CATEGORY_UNLINK","SHIPPING_CREATE","SHIPPING_VALIDATE","SHIPPING_MODIFY","SHIPPING_DELETE","SHIPPING_SENTBYMAIL","DELIVERY_VALIDATE"
+    ,"DELIVERY_DELETE","ACTION_CREATE","ACTION_MODIFY","ACTION_DELETE","ACTION_ADD_CONTACT","ACTION_DELETE_CONTACT","ACTION_DELETE_RESOURCE"
+    ,"DEPLACEMENT_CREATE","DON_CREATE","DON_MODIFY","DON_DELETE","LOCALTAX_CREATE","LOCALTAX_MODIFY","LOCALTAX_DELETE","TVA_CREATE"
+    ,"TVA_MODIFY","TVA_DELETE","TVA_ADDPAYMENT","PROJECT_CREATE","PROJECT_MODIFY","PROJECT_DELETE","PROJECT_VALIDATE","PROJECT_CLOSE"
+    ,"PROJECT_ADD_CONTACT","PROJECT_DELETE_CONTACT","PROJECT_DELETE_RESOURCE","TASK_CREATE","TASK_MODIFY","TASK_DELETE","TASK_TIMESPENT_CREATE"
+    ,"TASK_TIMESPENT_MODIFY","TASK_TIMESPENT_DELETE","PROJECT_TASK_ADD_CONTACT","PROJECT_TASK_DELETE_CONTACT","PROJECT_TASK_DELETE_RESOURCE"
+    ,"MYECMDIR_CREATE","MYECMDIR_MODIFY","MYECMDIR_DELETE","IMPORT_DELETE","STOCK_MOVEMENT","PAYBOX_PAYMENT_OK","PAYPAL_PAYMENT_OK"
+    ,"LINK_CREATE","LINK_MODIFY","LINK_DELETE","OPENSURVEY_CREATE","OPENSURVEY_DELETE"
+    ];
+    $( ".trigger_code" ).autocomplete({
+      source: TTrigger
+    });
+    
+   
+  });
+</script>
+<?php
 
 llxFooter();
 
