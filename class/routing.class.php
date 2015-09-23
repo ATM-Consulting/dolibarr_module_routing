@@ -20,18 +20,31 @@ class TRouting extends TObjetStd {
 		$this->product_type_field = 'product_type';
     }
     
-	function mouvement(&$PDOdb, $fk_product, $qty,$fk_warehouse_from, $fk_warehouse_to) {
-		global $db, $user;
+	function mouvement(&$PDOdb, &$object, $fk_product, $qty,$fk_warehouse_from, $fk_warehouse_to) {
+		global $db, $user, $langs;
 		
 		dol_include_once('/product/stock/class/mouvementstock.class.php');
+		dol_include_once('/product/class/product.class.php');
 		
 		/*var_dump($fk_product, $qty,$fk_warehouse_from, $fk_warehouse_to);
 		exit;
 			*/
 		$stock=new MouvementStock($db);
 		
-		$stock->reception($user, $fk_product, $fk_warehouse_to, $qty);
-		$stock->livraison($user, $fk_product, $fk_warehouse_from, $qty);
+		$label = '';
+		if(method_exists($object, 'getNomUrl')) {
+			$label.=$object->getNomUrl(1);
+		}
+		
+		if(!empty($conf->global->ROUTING_INFO_ALERT)) {
+			$product = new Product($db);
+			$product->fetch($fk_product);
+			$msg = $product->getNomUrl(0).' '.$product->label.' '.$langs->trans('MoveFrom').' '.$wh_from_label.' '.$langs->trans('MoveTo').' '.$wh_to_label;
+			setEventMessage($msg);			
+		}
+		
+		$stock->reception($user, $fk_product, $fk_warehouse_to, $qty,0,$label);
+		$stock->livraison($user, $fk_product, $fk_warehouse_from, $qty,0,$label);
 				
 	}
 	
@@ -71,10 +84,10 @@ class TRouting extends TObjetStd {
 			if($line->{$this->product_type_field} == 0) {
 				
 				if($sens>0) {
-					$this->mouvement($PDOdb, $line->{$this->fk_product_field}, $line->{$this->qty_field} ,$this->fk_warehouse_from,$this->fk_warehouse_to);
+					$this->mouvement($PDOdb,$object, $line->{$this->fk_product_field}, $line->{$this->qty_field} ,$this->fk_warehouse_from,$this->fk_warehouse_to);
 				}
 				else {
-					$this->mouvement($PDOdb, $line->{$this->fk_product_field}, $line->{$this->qty_field},$this->fk_warehouse_to,$this->fk_warehouse_from);
+					$this->mouvement($PDOdb,$object, $line->{$this->fk_product_field}, $line->{$this->qty_field},$this->fk_warehouse_to,$this->fk_warehouse_from);
 				}		
 				
 			}
