@@ -89,7 +89,7 @@ class modrouting extends DolibarrModules
 		//                        );
 		$this->module_parts = array(
 			'triggers'=>1
-		
+			,'hooks' => array('propalcard','ordercard','invoicecard') 
 		);
 
 		// Data directories to create when module is enabled.
