@@ -63,7 +63,8 @@ class Actionsrouting
 	{
 		//var_dump($parameters, $action);
 		
-		$currentcontext = $parameters['currentcontext'];
+		if (!empty($parameters['currentcontext'])) $currentcontext = $parameters['currentcontext'];
+		else $currentcontext = $parameters['context']; // Retrocompatibility <= 3.6
 
 		$routeAction = $currentcontext.':'.$action;
 
