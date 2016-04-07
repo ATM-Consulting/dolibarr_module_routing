@@ -116,7 +116,7 @@ class Interfaceroutingtrigger
         	
         define('INC_FROM_DOLIBARR', true);
         dol_include_once('/routing/config.php');
-        TRouting::route($action, $object);
+		if(class_exists('TRouting')) TRouting::route($action, $object);
       
 
         return 0;
