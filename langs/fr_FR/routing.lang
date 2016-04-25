@@ -5,3 +5,13 @@ ATMAbout = Ce module a été développé par <a href="http://www.atm-consulting.
 
 routingSetup = Configuration du module routing
 routingAbout = A propos du module routing
+
+WarehouseTo=Destination
+WarehouseFrom=Origine
+Warehouse=Entrepôt
+QtyField=Champs de quantité
+Lines=lignes
+ReverseTrigger=Action inverse
+CodeToEvalBefore=Code pour validation de l'acte
+CodeToEvalAfter=Code après mouvement
+Saved=Configuration sauvegardée
