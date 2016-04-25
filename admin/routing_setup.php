@@ -55,6 +55,7 @@ $PDOdb=new TPDOdb;
              $r->load($PDOdb, $id_rem);
              $r->set_values($rem);
              
+			 $r->check_old = !empty($rem['check_old']) ? 1 : 0;
              $r->fk_societe = GETPOST('TRouting_'.$r->getId().'_fk_soc');
              $r->fk_user = GETPOST('TRouting_'.$r->getId().'_fk_user');
              
@@ -139,6 +140,10 @@ print '</tr>';
            			<tr>
             			<td><?php echo $langs->trans('ReverseTrigger'); ?></td>
             			<td><?php echo $formCore->texte('','TRouting['.$r->getId().'][trigger_code_reverse]' , $r->trigger_code_reverse, 25,50, '', 'trigger_code'); ?></td>
+            		</tr>
+            		<tr>
+            			<td><?php echo $langs->trans('CheckOld'); ?></td>
+            			<td><?php echo $formCore->checkbox1('','TRouting['.$r->getId().'][check_old]' ,1, $r->check_old); ?></td>
             		</tr>
             		
             	</table>
