@@ -72,7 +72,7 @@ class TRouting extends TObjetStd {
 	private function routeLines(&$object, $sens = 1) {
 		
 		if(!empty($route->message_condition)) {
-            if(!eval('return ('.$route->message_condition.')')) continue; //ne répond pas au test 
+            if(!eval('return ('.$route->message_condition.')')) return false; //ne répond pas au test 
         }
 		if(!empty($row->message_code)) {
             eval($row->message_code);
