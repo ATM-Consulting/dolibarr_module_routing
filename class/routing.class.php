@@ -44,6 +44,7 @@ class TRouting extends TObjetStd {
 			setEventMessage($msg);			
 		}
 		
+		$stock->origin = $object;
 		$stock->reception($user, $fk_product, $fk_warehouse_to, $qty,0,$label);
 		$stock->livraison($user, $fk_product, $fk_warehouse_from, $qty,0,$label);
 				
