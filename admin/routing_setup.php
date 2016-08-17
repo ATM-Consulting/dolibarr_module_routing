@@ -55,6 +55,7 @@ $PDOdb=new TPDOdb;
              $r->load($PDOdb, $id_rem);
              $r->set_values($rem);
              
+			 $r->check_old = !empty($rem['check_old']) ? 1 : 0;
              $r->fk_societe = GETPOST('TRouting_'.$r->getId().'_fk_soc');
              $r->fk_user = GETPOST('TRouting_'.$r->getId().'_fk_user');
              
@@ -94,7 +95,7 @@ $head = routingAdminPrepareHead();
 dol_fiche_head(
     $head,
     'settings',
-    $langs->trans("Module104330Name"),
+    $langs->trans("Module104760Name"),
     0,
     "rememberme@rememberme"
 );
@@ -129,19 +130,46 @@ print '</tr>';
         ?>
         <tr class="<?php echo $class  ?>">
             <td valign="top">
-            <?php 
-            echo $formCore->texte('','TRouting['.$r->getId().'][trigger_code]' , $r->trigger_code, 25,50, '', 'trigger_code'); 
-            echo $langs->trans('ReverseTrigger');
-			echo $formCore->texte('','TRouting['.$r->getId().'][trigger_code_reverse]' , $r->trigger_code_reverse, 25,50, '', 'trigger_code'); 
+            	
+            	<table width="100%">
+            		<tr>
+            			<td><?php echo $langs->trans('Trigger'); ?></td>
+            			<td><?php echo $formCore->texte('','TRouting['.$r->getId().'][trigger_code]' , $r->trigger_code, 25,50, '', 'trigger_code'); ?></td>
+            		</tr>
+            		
+           			<tr>
+            			<td><?php echo $langs->trans('ReverseTrigger'); ?></td>
+            			<td><?php echo $formCore->texte('','TRouting['.$r->getId().'][trigger_code_reverse]' , $r->trigger_code_reverse, 25,50, '', 'trigger_code'); ?></td>
+            		</tr>
+            		<tr>
+            			<td><?php echo $langs->trans('CheckOld'); ?></td>
+            			<td><?php echo $formCore->checkbox1('','TRouting['.$r->getId().'][check_old]' ,1, $r->check_old); ?></td>
+            		</tr>
+            		
+            	</table>
             
-			
-            ?></td>
+            </td>
             <td valign="top">
-            	<?php echo $formCore->texte('','TRouting['.$r->getId().'][qty_field]' , $r->qty_field, 25,50); ?>
-            	<?php echo $formCore->texte('product','TRouting['.$r->getId().'][fk_product_field]' , $r->fk_product_field, 25,50); ?>
-            	<?php echo $formCore->texte('lines','TRouting['.$r->getId().'][lines_field]' , $r->lines_field, 25,50); ?>
-            	<?php echo $formCore->texte('type','TRouting['.$r->getId().'][product_type_field]' , $r->product_type_field, 25,50); ?>
-            
+            	
+            	<table width="100%">
+            		<tr>
+            			<td><?php echo $langs->trans('Qty'); ?></td>
+            			<td><?php echo $formCore->texte('','TRouting['.$r->getId().'][qty_field]' , $r->qty_field, 25,50); ?></td>
+            		</tr>
+            		<tr>
+            			<td><?php echo $langs->trans('Product'); ?></td>
+            			<td><?php echo $formCore->texte('','TRouting['.$r->getId().'][fk_product_field]' , $r->fk_product_field, 25,50); ?></td>
+            		</tr>
+            		<tr>
+            			<td><?php echo $langs->trans('Lines'); ?></td>
+            			<td><?php echo $formCore->texte('','TRouting['.$r->getId().'][lines_field]' , $r->lines_field, 25,50); ?></td>
+            		</tr>
+            		<tr>
+            			<td><?php echo $langs->trans('Type'); ?></td>
+            			<td><?php echo $formCore->texte('','TRouting['.$r->getId().'][product_type_field]' , $r->product_type_field, 25,50); ?></td>
+            		</tr>
+            	</table>
+
             </td>
             
             <td valign="top"><?php 
@@ -151,15 +179,22 @@ print '</tr>';
                     //}       
              ?></td>
             
-            <td valign="top"><?php 
-    
+            <td valign="top">
+            	
+            	<table width="100%">
+            		<tr>
+            			<td><?php echo $langs->trans('WarehouseFrom'); ?></td>
+            			<td><?php echo $formProduct->selectWarehouses($r->fk_warehouse_from,'TRouting['.$r->getId().'][fk_warehouse_from]'); ?></td>
+            		</tr>
+            		
+           			<tr>
+            			<td><?php echo $langs->trans('WarehouseTo'); ?></td>
+            			<td><?php echo $formProduct->selectWarehouses($r->fk_warehouse_to,'TRouting['.$r->getId().'][fk_warehouse_to]'); ?></td>
+            		</tr>
+            		
+            	</table>
             
-                    echo $langs->trans('WarehouseFrom'); //fk_warehouse_from
-                    echo $formProduct->selectWarehouses($r->fk_warehouse_from,'TRouting['.$r->getId().'][fk_warehouse_from]');
-                    echo $langs->trans('WarehouseTo'); //fk_warehouse_to
-                    echo $formProduct->selectWarehouses($r->fk_warehouse_to,'TRouting['.$r->getId().'][fk_warehouse_to]');
-                    
-            ?></td>
+            </td>
             
             <td valign="bottom"><?php echo '<a href="?action=delete&id='.$r->getId().'">'.img_delete().'</a>';  ?></td>
         </tr>

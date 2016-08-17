@@ -8,6 +8,7 @@ class TRouting extends TObjetStd {
         
         parent::add_champs('trigger_code,trigger_code_reverse', array('index'=>true, 'type'=>'string', 'length'=>50));
         parent::add_champs('fk_warehouse_from,fk_warehouse_to', array('index'=>true, 'type'=>'integer'));
+        parent::add_champs('check_old', array( 'type'=>'integer'));
         
         parent::add_champs('message_condition,message_code', array('type'=>'text'));
         
@@ -43,6 +44,7 @@ class TRouting extends TObjetStd {
 			setEventMessage($msg);			
 		}
 		
+		$stock->origin = $object;
 		$stock->reception($user, $fk_product, $fk_warehouse_to, $qty,0,$label);
 		$stock->livraison($user, $fk_product, $fk_warehouse_from, $qty,0,$label);
 				
@@ -71,23 +73,46 @@ class TRouting extends TObjetStd {
 	private function routeLines(&$object, $sens = 1) {
 		
 		if(!empty($route->message_condition)) {
-            if(!eval('return ('.$route->message_condition.')')) continue; //ne répond pas au test 
+            if(!eval('return ('.$route->message_condition.')')) return false; //ne répond pas au test 
         }
 		if(!empty($row->message_code)) {
             eval($row->message_code);
         }
         
-		if(empty($object->{$this->lines_field})) return false;
+		$lines_field = $this->lines_field;
 		
-		foreach($object->{$this->lines_field} as &$line) {
+		if($lines_field ==='this') {
+			$lines_field = 'lines';
+			$object->lines=array(); 
+			$object->lines[] = $object;  
+		}
+		else if(empty($object->{$lines_field})) {
+			return false;
+		}
+		
+		foreach($object->{$lines_field} as &$line) {
 			
 			if($line->{$this->product_type_field} == 0) {
 				
+				$qty = $line->{$this->qty_field};
+				if($this->check_old) {
+					
+					$old = null;
+					if(!empty($line->oldline)) $old = &$line->oldline;
+					else if(!empty($line->oldline)) $old = &$line->old;
+					
+					if(!is_null($old) && !empty($old->{$this->qty_field})) {
+						$old_qty = $old->{$this->qty_field};
+						$qty = $qty - $old_qty;
+					}
+					
+				}
+				
 				if($sens>0) {
-					$this->mouvement($PDOdb,$object, $line->{$this->fk_product_field}, $line->{$this->qty_field} ,$this->fk_warehouse_from,$this->fk_warehouse_to);
+					$this->mouvement($PDOdb,$object, $line->{$this->fk_product_field}, $qty ,$this->fk_warehouse_from,$this->fk_warehouse_to);
 				}
 				else {
-					$this->mouvement($PDOdb,$object, $line->{$this->fk_product_field}, $line->{$this->qty_field},$this->fk_warehouse_to,$this->fk_warehouse_from);
+					$this->mouvement($PDOdb,$object, $line->{$this->fk_product_field}, $qty,$this->fk_warehouse_to,$this->fk_warehouse_from);
 				}		
 				
 			}
