@@ -16,3 +16,9 @@ CodeToEvalBefore=Code pour validation de l'action
 CodeToEvalAfter=Code avant le mouvement
 Saved=Configuration sauvegardée
 CheckOld=Calculer la quantité sur l'ancienne valeur
+StockTransfert = Transfert de stock
+WarehourseSrc = Entrepot Source
+WarehourseDest = Entrepot de Destination
+
+TransfertStockFromTo = Transfert de l'entrepot %s vers l'entrepot %s
+CancelTransfertStockFromTo = Annulation du transfert de l'entrepot %s vers l'entrepot %s

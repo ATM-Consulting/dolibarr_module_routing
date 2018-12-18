@@ -17,3 +17,5 @@ $PDOdb=new TPDOdb;
 $o=new TRouting($db);
 $o->init_db_by_vars($PDOdb);
 
+$o=new TRoutingStock($db);
+$o->init_db_by_vars($PDOdb);
