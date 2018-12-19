@@ -135,7 +135,7 @@ class Interfaceroutingtrigger
 			dol_include_once('/product/stock/class/mouvementstock.class.php');
 			dol_include_once('/expedition/class/expedition.class.php');
 
-			if ($action != 'SHIPPING_DELETE')
+			if ($action != 'SHIPPING_DELETE') // Le mouvement de stock n'a pas d'origine au moment de la suppression donc obligé de passer par le trigger shipping delete =)
 			{
 				$stockMovement = new MouvementStock($db);
 				$stockMovement->fetch($object->id);
@@ -153,15 +153,18 @@ class Interfaceroutingtrigger
 			{
 				$shipping = $object;
 				$TRoutingStock = $routingStock->LoadAllBy($PDOdb, array('fk_soc' => $shipping->socid));
+				$testOnShippingDelete = ((($shipping->statut == Expedition::STATUS_CLOSED || $shipping->statut == Expedition::STATUS_VALIDATED) && $conf->global->STOCK_CALCULATE_ON_SHIPMENT)||($shipping->statut == Expedition::STATUS_CLOSED && $conf->global->STOCK_CALCULATE_ON_SHIPMENT_CLOSE)); // on vérifie que le mouvement de stock a été fait avant de l'annuler
 			}
 			else
 			{
 				if ($TShipping[$shipping->id])
 					return 0; //Pour pas passer n fois dans la boucle si plusieurs mvt de stock pour la meme exped
 				$TShipping[$shipping->id] = true;
+				$testOnShippingDelete = true;
 			}
+			
 
-			if (!empty($TRoutingStock) && $shipping->id > 0 )
+			if (!empty($TRoutingStock) && $shipping->id > 0 && $testOnShippingDelete)
 			{
 
 				$langs->load('routing@routing');
@@ -177,7 +180,7 @@ class Interfaceroutingtrigger
 				$warehouseDest = new Entrepot($db);
 				foreach ($shipping->lines as $line)
 				{
-					if (array_key_exists($line->entrepot_id, $TWarehouse))
+					if (array_key_exists($line->entrepot_id, $TWarehouse)) // Si l'entrepot est dans la liste de ceux qui font des transferts
 					{
 						$prod = new Product($db);
 						$result = $prod->fetch($line->fk_product);
