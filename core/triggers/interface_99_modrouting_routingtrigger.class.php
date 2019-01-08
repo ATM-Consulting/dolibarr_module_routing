@@ -37,7 +37,7 @@
 class Interfaceroutingtrigger
 {
 
-	private $db;
+	public $db;
 
 	/**
 	 * Constructor
