@@ -154,3 +154,15 @@ class TRouting extends TObjetStd {
 	}
 	
 }
+
+class TRoutingStock extends TRouting{
+	function __construct() {
+		global $langs,$db;
+        
+        parent::set_table(MAIN_DB_PREFIX.'routing_stock');
+        
+        parent::add_champs('fk_warehouse_from,fk_warehouse_to, fk_soc', array('index'=>true, 'type'=>'integer'));
+        parent::start();
+
+    }
+}
