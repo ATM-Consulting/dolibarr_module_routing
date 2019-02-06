@@ -173,7 +173,7 @@ print '</tr>';
             </td>
             
             <td valign="top"><?php 
-                    echo $formCore->zonetexte($langs->trans('CodeToEvalBefore').'<br />','TRouting['.$r->getId().'][condition]' , $r->message_condition, 50,2); 
+                    echo $formCore->zonetexte($langs->trans('CodeToEvalBefore').'<br />','TRouting['.$r->getId().'][message_condition]' , $r->message_condition, 50,2); 
                     //if($r->type == 'EVAL') {
                         echo '<br />'.$formCore->zonetexte($langs->trans('CodeToEvalAfter').'<br />','TRouting['.$r->getId().'][message_code]' , $r->message_code, 50,2);
                     //}       
