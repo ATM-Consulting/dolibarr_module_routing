@@ -139,7 +139,7 @@ class modrouting extends DolibarrModules
 		// 'stock'            to add a tab in stock view
 		// 'thirdparty'       to add a tab in third party view
 		// 'user'             to add a tab in user view
-        $this->tabs = array();
+        $this->tabs = array('thirdparty:+stock_transfert:StockTransfert:routing@routing:1:/routing/stock_transfert.php?id=__ID__');
 
         // Dictionaries
 	    if (! isset($conf->routing->enabled))
