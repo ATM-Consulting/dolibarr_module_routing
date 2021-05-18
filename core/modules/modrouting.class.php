@@ -58,7 +58,7 @@ class modrouting extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module routing";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.1.0';
+		$this->version = '1.1.1';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -89,7 +89,7 @@ class modrouting extends DolibarrModules
 		//                        );
 		$this->module_parts = array(
 			'triggers'=>1
-			,'hooks' => array('propalcard','ordercard','invoicecard') 
+			,'hooks' => array('propalcard','ordercard','invoicecard')
 		);
 
 		// Data directories to create when module is enabled.
@@ -250,7 +250,7 @@ class modrouting extends DolibarrModules
 	function init($options='')
 	{
 		$sql = array();
-		
+
 		define('INC_FROM_DOLIBARR',true);
 
 		dol_include_once('/routing/config.php');
