@@ -5,3 +5,20 @@ ATMAbout = This module has been developed by <a href="http://www.atm-consulting.
 
 routingSetup = routing module setup
 routingAbout = About routing
+
+RoutingSetup=routing module Configuration
+WarehouseTo=Destination
+WarehouseFrom=Origin
+Warehouse=Warehouse
+QtyField=Quantity fields
+Lines=lines
+ReverseTrigger=Reverse action
+CodeToEvalBefore=Code for action validation
+CodeToEvalAfter=Code before movement
+Saved=Saved
+CheckOld=Calculate the quantity on the old value
+StockTransfert=Stock transfer
+WarehourseSrc=Source Warehouse
+WarehourseDest=Destination Warehouse
+TransfertStockFromTo=Transfer from warehouse %s to warehouse %s
+CancelTransfertStockFromTo=Cancellation of transfer from warehouse %s to warehouse %s
