@@ -8,11 +8,11 @@ require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 dol_include_once('/routing/class/routing.class.php');
 dol_include_once('/product/class/html.formproduct.class.php');
 
-$id = GETPOST('id');
-$action = GETPOST('action');
-$warehouse_src = GETPOST('warehouse_src');
-$warehouse_dest = GETPOST('warehouse_dest');
-$lineid= GETPOST('lineid');
+$id = GETPOST('id', 'int');
+$action = GETPOST('action', 'alphanohtml');
+$warehouse_src = GETPOST('warehouse_src', 'alphanohtml');
+$warehouse_dest = GETPOST('warehouse_dest', 'alphanohtml');
+$lineid= GETPOST('lineid', 'int');
 
 
 $langs->load('routing@routing');

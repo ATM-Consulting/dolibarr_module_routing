@@ -39,46 +39,46 @@ if (! $user->admin) {
 }
 
 // Parameters
-$action = GETPOST('action', 'alpha');
+$action = GETPOST('action', 'alphanohtml');
 $PDOdb=new TPDOdb;
 /*
  * Actions
  */
 
  if($action == 'save') {
-     
+
      if(!empty($_REQUEST['TRouting'])) {
-         
+
          foreach($_REQUEST['TRouting'] as $id_rem => &$rem) {
-            
+
              $r=new TRouting;
              $r->load($PDOdb, $id_rem);
              $r->set_values($rem);
-             
+
 			 $r->check_old = !empty($rem['check_old']) ? 1 : 0;
-             $r->fk_societe = GETPOST('TRouting_'.$r->getId().'_fk_soc');
-             $r->fk_user = GETPOST('TRouting_'.$r->getId().'_fk_user');
-             
+             $r->fk_societe = GETPOST('TRouting_'.$r->getId().'_fk_soc', 'int');
+             $r->fk_user = GETPOST('TRouting_'.$r->getId().'_fk_user', 'int');
+
              $r->save($PDOdb);
          }
-         
-         
+
+
          setEventMessage('Saved');
      }
-     
- } 
+
+ }
  else if($action == 'delete'){
      $r=new TRouting;
-     $r->load($PDOdb, GETPOST('id'));
+     $r->load($PDOdb, GETPOST('id', 'int'));
      $r->delete($PDOdb);
  }
  else if($action == 'add'){
      $r=new TRouting;
      $r->save($PDOdb);
-     
+
  }
- 
- 
+
+
 /*
  * View
  */
@@ -124,19 +124,19 @@ print '</tr>';
     $TRoute = TRouting::getAll($PDOdb);
 
     foreach($TRoute as &$r) {
-        
+
         $class = ($class == 'impair') ? 'pair' : 'impair';
-        
+
         ?>
         <tr class="<?php echo $class  ?>">
             <td valign="top">
-            	
+
             	<table width="100%">
             		<tr>
             			<td><?php echo $langs->trans('Trigger'); ?></td>
             			<td><?php echo $formCore->texte('','TRouting['.$r->getId().'][trigger_code]' , $r->trigger_code, 25,50, '', 'trigger_code'); ?></td>
             		</tr>
-            		
+
            			<tr>
             			<td><?php echo $langs->trans('ReverseTrigger'); ?></td>
             			<td><?php echo $formCore->texte('','TRouting['.$r->getId().'][trigger_code_reverse]' , $r->trigger_code_reverse, 25,50, '', 'trigger_code'); ?></td>
@@ -145,12 +145,12 @@ print '</tr>';
             			<td><?php echo $langs->trans('CheckOld'); ?></td>
             			<td><?php echo $formCore->checkbox1('','TRouting['.$r->getId().'][check_old]' ,1, $r->check_old); ?></td>
             		</tr>
-            		
+
             	</table>
-            
+
             </td>
             <td valign="top">
-            	
+
             	<table width="100%">
             		<tr>
             			<td><?php echo $langs->trans('Qty'); ?></td>
@@ -171,39 +171,39 @@ print '</tr>';
             	</table>
 
             </td>
-            
-            <td valign="top"><?php 
-                    echo $formCore->zonetexte($langs->trans('CodeToEvalBefore').'<br />','TRouting['.$r->getId().'][message_condition]' , $r->message_condition, 50,2); 
+
+            <td valign="top"><?php
+                    echo $formCore->zonetexte($langs->trans('CodeToEvalBefore').'<br />','TRouting['.$r->getId().'][message_condition]' , $r->message_condition, 50,2);
                     //if($r->type == 'EVAL') {
                         echo '<br />'.$formCore->zonetexte($langs->trans('CodeToEvalAfter').'<br />','TRouting['.$r->getId().'][message_code]' , $r->message_code, 50,2);
-                    //}       
+                    //}
              ?></td>
-            
+
             <td valign="top">
-            	
+
             	<table width="100%">
             		<tr>
             			<td><?php echo $langs->trans('WarehouseFrom'); ?></td>
             			<td><?php echo $formProduct->selectWarehouses($r->fk_warehouse_from,'TRouting['.$r->getId().'][fk_warehouse_from]'); ?></td>
             		</tr>
-            		
+
            			<tr>
             			<td><?php echo $langs->trans('WarehouseTo'); ?></td>
             			<td><?php echo $formProduct->selectWarehouses($r->fk_warehouse_to,'TRouting['.$r->getId().'][fk_warehouse_to]'); ?></td>
             		</tr>
-            		
+
             	</table>
-            
+
             </td>
-            
+
             <td valign="bottom"><?php echo '<a href="?action=delete&id='.$r->getId().'">'.img_delete().'</a>';  ?></td>
         </tr>
-        
+
         <?php
-        
-        
+
+
     }
-    
+
 
 print '</table>';
 
@@ -215,7 +215,7 @@ echo '<div class="tabsAction">
 ';
 
 $formCore->end();
-?>  
+?>
 <script type="text/javascript">
 $(document).ready(function() {
     var TTrigger = [
@@ -255,8 +255,8 @@ $(document).ready(function() {
     $( ".trigger_code" ).autocomplete({
       source: TTrigger
     });
-    
-   
+
+
   });
 </script>
 <?php
