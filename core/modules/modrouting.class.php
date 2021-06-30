@@ -47,18 +47,20 @@ class modrouting extends DolibarrModules
 		// Id for module (must be unique).
 		// Use here a free id (See in Home -> System information -> Dolibarr for list of used modules id).
 		$this->numero = 104760; // 104000 to 104999 for ATM CONSULTING
+		$this->editor_name = 'ATM Consulting';
+		$this->editor_url = 'https://www.atm-consulting.fr';
 		// Key text used to identify module (for permissions, menus, etc...)
 		$this->rights_class = 'routing';
 
 		// Family can be 'crm','financial','hr','projects','products','ecm','technic','other'
 		// It is used to group modules in module setup page
-		$this->family = "other";
+		$this->family = "ATM Consulting - Autre";
 		// Module label (no space allowed), used if translation string 'ModuleXXXName' not found (where XXX is value of numeric property 'numero' of module)
 		$this->name = preg_replace('/^mod/i','',get_class($this));
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
-		$this->description = "Description of module routing";
+		$this->description = "Routing by ATM: automated stock movement between warehouses";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.1.0';
+		$this->version = '1.1.2';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -89,7 +91,7 @@ class modrouting extends DolibarrModules
 		//                        );
 		$this->module_parts = array(
 			'triggers'=>1
-			,'hooks' => array('propalcard','ordercard','invoicecard') 
+			,'hooks' => array('propalcard','ordercard','invoicecard')
 		);
 
 		// Data directories to create when module is enabled.
@@ -250,7 +252,7 @@ class modrouting extends DolibarrModules
 	function init($options='')
 	{
 		$sql = array();
-		
+
 		define('INC_FROM_DOLIBARR',true);
 
 		dol_include_once('/routing/config.php');
