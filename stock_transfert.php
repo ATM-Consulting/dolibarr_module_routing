@@ -19,6 +19,8 @@ $langs->load('routing@routing');
 $object = new Societe($db);
 $object->fetch($id);
 
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
+
 $PDOdb = new TPDOdb;
 $formProduct = new FormProduct($db);
 
@@ -53,6 +55,7 @@ $head = societe_prepare_head($object);
 dol_fiche_head($head, 'stock_transfert', $langs->trans('StockTransfert'), 0);
 
 print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '?id='.$id.'">';
+print '<input type="hidden" name="token" value="'.$newToken.'">';
 print '<input type="hidden" name="action" value="save" />';
 
 
