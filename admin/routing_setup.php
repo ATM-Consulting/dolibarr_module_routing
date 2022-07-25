@@ -88,17 +88,21 @@ llxHeader('', $langs->trans($page_name));
 // Subheader
 $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
     . $langs->trans("BackToModuleList") . '</a>';
-print_fiche_titre($langs->trans($page_name), $linkback);
+print load_fiche_titre($langs->trans($page_name), $linkback, "object_routing_simple.svg@routing");
 
 // Configuration header
 $head = routingAdminPrepareHead();
-dol_fiche_head(
+print dol_get_fiche_head(
     $head,
     'settings',
     $langs->trans("Module104760Name"),
     0,
-    "rememberme@rememberme"
+	"routing_simple.svg@routing"
 );
+
+print dol_get_fiche_end();
+
+$newToken = function_exists('newToken')?newToken():$_SESSION['new_token'];
 
 // Setup page goes here
 $form=new Form($db);
@@ -209,7 +213,7 @@ print '</table>';
 
 
 echo '<div class="tabsAction">
- <a href="?action=add" class="butAction">'.$langs->trans('Add').'</a>
+ <a href="?action=add&token='.$newToken.'" class="butAction">'.$langs->trans('Add').'</a>
  <input type="submit" class="butAction" value="'.$langs->trans('Save').'" name="bt_save" />
 </div>
 ';
