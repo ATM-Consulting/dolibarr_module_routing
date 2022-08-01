@@ -44,7 +44,7 @@ $PDOdb=new TPDOdb;
 /*
  * Actions
  */
-
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
  if($action == 'save') {
 
      if(!empty($_REQUEST['TRouting'])) {
@@ -86,7 +86,7 @@ $page_name = "RoutingSetup";
 llxHeader('', $langs->trans($page_name));
 
 // Subheader
-$linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
+$linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php'.'?token='.$newToken.'">'
     . $langs->trans("BackToModuleList") . '</a>';
 print load_fiche_titre($langs->trans($page_name), $linkback, "object_routing_simple.svg@routing");
 
@@ -200,7 +200,7 @@ print '</tr>';
 
             </td>
 
-            <td valign="bottom"><?php echo '<a href="?action=delete&id='.$r->getId().'">'.img_delete().'</a>';  ?></td>
+            <td valign="bottom"><?php echo '<a href="?action=delete&id='.$r->getId().'&token='.$newToken.'">'.img_delete().'</a>';  ?></td>
         </tr>
 
         <?php
