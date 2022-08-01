@@ -44,7 +44,7 @@ $PDOdb=new TPDOdb;
 /*
  * Actions
  */
-
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
  if($action == 'save') {
 
      if(!empty($_REQUEST['TRouting'])) {
@@ -86,7 +86,7 @@ $page_name = "RoutingSetup";
 llxHeader('', $langs->trans($page_name));
 
 // Subheader
-$linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
+$linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php'.'?token='.$newToken.'">'
     . $langs->trans("BackToModuleList") . '</a>';
 print_fiche_titre($langs->trans($page_name), $linkback);
 
@@ -196,7 +196,7 @@ print '</tr>';
 
             </td>
 
-            <td valign="bottom"><?php echo '<a href="?action=delete&id='.$r->getId().'">'.img_delete().'</a>';  ?></td>
+            <td valign="bottom"><?php echo '<a href="?action=delete&id='.$r->getId().'&token='.$newToken.'">'.img_delete().'</a>';  ?></td>
         </tr>
 
         <?php
@@ -209,7 +209,7 @@ print '</table>';
 
 
 echo '<div class="tabsAction">
- <a href="?action=add" class="butAction">'.$langs->trans('Add').'</a>
+ <a href="?action=add&token='.$newToken.'" class="butAction">'.$langs->trans('Add').'</a>
  <input type="submit" class="butAction" value="'.$langs->trans('Save').'" name="bt_save" />
 </div>
 ';

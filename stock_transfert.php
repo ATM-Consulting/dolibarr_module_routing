@@ -14,7 +14,7 @@ $warehouse_src = GETPOST('warehouse_src', 'alphanohtml');
 $warehouse_dest = GETPOST('warehouse_dest', 'alphanohtml');
 $lineid= GETPOST('lineid', 'int');
 
-
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 $langs->load('routing@routing');
 $object = new Societe($db);
 $object->fetch($id);
@@ -54,7 +54,7 @@ dol_fiche_head($head, 'stock_transfert', $langs->trans('StockTransfert'), 0);
 
 print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '?id='.$id.'">';
 print '<input type="hidden" name="action" value="save" />';
-
+print '<input type="hidden" name="token" value="'.$newToken.'" />';
 
 print '<table width=100% class="tagtable liste">';
 print '<tr class="liste_titre">';
@@ -76,7 +76,7 @@ foreach($TObj as $obj){
 	$warehouseTo->fetch($obj->fk_warehouse_to);
 	print '<td>'.$warehouseFrom->getNomUrl(1).'</td>';
 	print '<td>'.$warehouseTo->getNomUrl(1).'</td>';
-	print '<td class="nowrap" align="center"> <a href="'.$_SERVER["PHP_SELF"].'?id='.$id.'&action=delete&lineid='.$obj->rowid.'" >'.img_delete().'</a></td>';
+	print '<td class="nowrap" align="center"> <a href="'.$_SERVER["PHP_SELF"].'?id='.$id.'&action=delete&lineid='.$obj->rowid.'&token='.$newToken.'" >'.img_delete().'</a></td>';
 	print '</tr>';
 }
 
